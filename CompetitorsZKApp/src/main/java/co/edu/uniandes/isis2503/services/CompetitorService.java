@@ -16,6 +16,7 @@ import javax.persistence.Query;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -52,6 +53,16 @@ public class CompetitorService {
         return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(competitors).build();
     }
 
+    @GET
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response darCompetenciasPorID(@PathParam("id") Long id)
+    {
+        Query q = entityManager.createQuery("select u from Competitor u where u.id = " + id + " order by u.surname ASC"); 
+        List<CompetitorDTO> competitors = q.getResultList();
+        return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(competitors).build();
+    }
+    
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     public Response createCompetitor(CompetitorDTO competitor) {

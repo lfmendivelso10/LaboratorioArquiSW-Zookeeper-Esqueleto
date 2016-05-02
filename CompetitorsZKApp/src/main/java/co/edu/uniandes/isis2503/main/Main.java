@@ -14,7 +14,7 @@ import org.eclipse.jetty.webapp.WebAppContext;
 public class Main 
 {
     
-    public static final String SERVIDOR_ZK = "http://localhost:8080/directory/";
+    
     
 
     /**
@@ -24,7 +24,7 @@ public class Main
         String webappDirLocation = "src/main/webapp/";
         String webPort = System.getenv("PORT");
         if (webPort == null || webPort.isEmpty()) {
-            webPort = "8081";
+            webPort = ServiceRegister.HOST_PORT + "";
         }
         Server server = new Server(Integer.valueOf(webPort));
         WebAppContext root = new WebAppContext();
@@ -34,8 +34,15 @@ public class Main
         PersistenceManager.getInstance().getEntityManagerFactory();
         root.setParentLoaderPriority(true);
         server.setHandler(root);
+        
+        ServiceRegister.registerService("Competitors", "/competitors");
+        ServiceRegister.registerService("CompetitorsById", "/competitors/{id}");
+        
         server.start();
         server.join();
     }
+    
+    
+    
 
 }

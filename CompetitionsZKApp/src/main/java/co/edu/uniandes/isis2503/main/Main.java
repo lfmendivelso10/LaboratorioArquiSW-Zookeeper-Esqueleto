@@ -40,6 +40,10 @@ public class Main
         PersistenceManager.getInstance().getEntityManagerFactory();
         root.setParentLoaderPriority(true);
         server.setHandler(root);
+        
+        ServiceRegister.registerService("Competitions", "/competitions");
+        ServiceRegister.registerService("WinnersCompetitions", "/competitions/{name}");
+        
         server.start();
         server.join();
     }

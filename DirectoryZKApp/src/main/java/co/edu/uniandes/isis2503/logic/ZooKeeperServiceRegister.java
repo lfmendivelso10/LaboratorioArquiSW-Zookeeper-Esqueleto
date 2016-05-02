@@ -26,10 +26,10 @@ public class ZooKeeperServiceRegister implements Closeable
     private  ServiceDiscovery<InstanceDetails> serviceDiscovery;
     private  ServiceInstance<InstanceDetails> thisInstance;
 
-    public ZooKeeperServiceRegister(CuratorFramework client,String id, String address, int nPort, String path, String serviceName, String description, String serviceType) throws Exception
+    public ZooKeeperServiceRegister(CuratorFramework client,String id, String address, int nPort, String path, String serviceName, String description, String serviceType, String relPath) throws Exception
     {
         
-        UriSpec     uriSpec = new UriSpec("http://"+address+":"+nPort);
+        UriSpec     uriSpec = new UriSpec("http://"+address+":"+nPort+relPath);
 
         thisInstance = ServiceInstance.<InstanceDetails>builder()
             .address(address)

@@ -16,6 +16,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 import org.apache.curator.x.discovery.ServiceInstance;
 import org.apache.curator.x.discovery.ServiceType;
+import org.apache.curator.x.discovery.UriSpec;
 import org.codehaus.jettison.json.JSONObject;
 
 /**
@@ -65,8 +66,11 @@ public class DirectoryServices
             String address= in.getString("address");
             int port = in.getInt("port");
             String serviceType = in.getString("serviceType");
+            String uriSpe = in.getString("uriSpec");
 
-            ServiceInstance<InstanceDetails> service = new ServiceInstance<InstanceDetails>(name, id, address, port, Integer.SIZE, null, 0, ServiceType.valueOf(serviceType), null);
+            UriSpec uriSpec = new UriSpec("http://"+address+":"+port+uriSpe);
+            
+            ServiceInstance<InstanceDetails> service = new ServiceInstance<InstanceDetails>(name, id, address, port, Integer.SIZE, null, 0, ServiceType.valueOf(serviceType), uriSpec);
 
             return zooKeeperDiscoveryMannager.putService(service,name,id);            
             

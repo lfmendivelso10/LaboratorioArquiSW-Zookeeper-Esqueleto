@@ -123,7 +123,7 @@ public class ZooKeeperDiscoveryMannager
         ServiceProvider<InstanceDetails> provider = providers.get(serviceName);
         if(provider == null)
         {
-            provider = serviceDiscovery.serviceProviderBuilder().serviceName(serviceName).providerStrategy(new RoundRobinStrategy<InstanceDetails>()).build();
+            provider = serviceDiscovery.serviceProviderBuilder().serviceName(serviceName).providerStrategy(new RandomStrategy<InstanceDetails>()).build();
             providers.put(serviceName, provider);
             provider.start();
         }
@@ -151,7 +151,7 @@ public class ZooKeeperDiscoveryMannager
         Collection<ServiceProvider<InstanceDetails>> all = new ArrayList<ServiceProvider<InstanceDetails>>();
         if(provider == null)
         {
-            provider = serviceDiscovery.serviceProviderBuilder().serviceName(serviceName).providerStrategy(new RoundRobinStrategy<InstanceDetails>()).build();
+            provider = serviceDiscovery.serviceProviderBuilder().serviceName(serviceName).providerStrategy(new RandomStrategy<InstanceDetails>()).build();
             providers.put(serviceName, provider);
             provider.start();
         }
@@ -176,14 +176,14 @@ public class ZooKeeperDiscoveryMannager
          ServiceProvider<InstanceDetails> provider = null ;//providers.get(serviceName);
        // if(provider == null)
         //{
-            provider = serviceDiscovery.serviceProviderBuilder().serviceName(serviceName).providerStrategy(new RoundRobinStrategy<InstanceDetails>()).build();
+            provider = serviceDiscovery.serviceProviderBuilder().serviceName(serviceName).providerStrategy(new RandomStrategy<InstanceDetails>()).build();
          //   providers.put(serviceName, provider);
             provider.start();
         //}
         ServiceInstance<InstanceDetails> instance= provider.getInstance();
         
       
-        if(instance == null)
+        if(instance == null) 
             return Response.status(200).header("Access-Control-Allow-Origin", "*").entity("NOT FOUND").build();
         else
             return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(instance).build();
