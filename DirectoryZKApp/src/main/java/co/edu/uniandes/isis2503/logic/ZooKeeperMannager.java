@@ -5,218 +5,93 @@
  */
 package co.edu.uniandes.isis2503.logic;
 
+import org.apache.curator.RetryPolicy;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.imps.CuratorFrameworkState;
+import org.apache.curator.retry.ExponentialBackoffRetry;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.Watcher.Event.KeeperState;
-import org.apache.zookeeper.ZooKeeper;
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.ZooDefs;
-import org.apache.zookeeper.data.Stat;
 /**
  *
  * @author Felipe
  */
-
 public class ZooKeeperMannager 
 {
-    private  ZooKeeperConnection zkConnection;
-    private  ZooKeeper zk;
-    private  String host;
-
+    private static CuratorFramework client;
+    public static ZooKeeperMannager instance;
     
-    public final static String PATH_ESTADO = "/Estado";
-    public final static String PATH_SERVICIOS = "/Servicios";
     
-    private static ZooKeeperMannager instance;
+    public ZooKeeperMannager()
+    {
+        createConnection();
+    }
+    
+    public void createConnection ()
+    {
+        RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
+        client = CuratorFrameworkFactory.newClient("localHost:2181", retryPolicy);
+        client.start();
+    }
     
     public static ZooKeeperMannager getInstance()
     {
-        System.out.println("Requiriendo instancia...");
-        if(instance == null)
-        {
-            System.out.println("Instancia null.... Creandola");
-            instance = new ZooKeeperMannager("localhost");
-        }
-        System.out.println("Retornando instancia");
+        if(client == null || !client.getState().equals(CuratorFrameworkState.STARTED)  )
+            instance = new ZooKeeperMannager();
         return instance;
     }
     
-    public ZooKeeperMannager(String host) 
+    public void createNode(String fullPath, String data) throws Exception
     {
-        System.out.println("Creando instancia al host " + host);
-        try
+        if(client == null || !client.getState().equals(CuratorFrameworkState.STARTED)  )
+            createConnection();
+        client.create().forPath(fullPath, data.getBytes());
+    }
+    
+    public String getNodeData(String fullPath) throws Exception
+    {
+        
+        if(client == null)
+            createConnection();
+        if (checkExistNode(fullPath))
         {
             
-            this.host = host;
-            System.out.println("Creando conexión ...");
-            zkConnection = new ZooKeeperConnection();
-            System.out.println("Conectando al host");
-            zkConnection.connect(this.host);
-            System.out.println("READY!!!");
-            zk = zkConnection.getZoo();
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }
+            byte[] n = client.getData().forPath(fullPath);
         
+            return new String(n);
+        }
+        return null;
     }
-    public void inicializar(String host)
+    
+    public void deleteNode(String fullPath)throws Exception
     {
-        try
-        {
-            this.host = host;
-            zkConnection = new ZooKeeperConnection();
-            zkConnection.connect(this.host);
-            zk = zkConnection.getZoo();
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }
-    } 
-           
-  
+        if(client == null || !client.getState().equals(CuratorFrameworkState.STARTED)  )
+            createConnection();
+        client.delete().deletingChildrenIfNeeded().forPath(fullPath);
+    }
     
-    public List<String> getChildren(String path) throws KeeperException,InterruptedException 
+    public boolean checkExistNode(String fullPath)throws Exception
     {
-        List<String> children = new ArrayList<String>();
-        if(znode_exists(path)!=null)
-        {
-            children = zk.getChildren(path, false);
-        }
-        return children;
+        if(client == null || !client.getState().equals(CuratorFrameworkState.STARTED)  )
+            createConnection();
+        return client.checkExists()!= null;
     }
     
-    //Devuelve un elemento no nulo si el nodo existe.
-    //Puede obtenerse información del Stat
-    public Stat znode_exists(String path) throws
-      KeeperException,InterruptedException {
-      return zk.exists(path, true);
-   }
-    
-    
-    public String getData(String path2) throws InterruptedException, KeeperException, UnsupportedEncodingException
+    public void closeConnection() throws Exception
     {
-        final String path =path2;
-        Stat stat = znode_exists(path);
-        
-        byte[] b = null;	
-        if(stat != null) 
-        {
-            b = zk.getData(path, new Watcher() 
-            {		
-                public void process(WatchedEvent we) 
-                {			
-                    if (we.getType() == Event.EventType.None) 
-                    {
-                        switch(we.getState()) 
-                        {
-                            case Expired:
-                            zkConnection.getConnectedSignal().countDown();
-                            break;
-                        }
-							
-                    }
-                    else 
-                    {
-                        try
-                        {
-                            byte[] bn = zk.getData(path,
-                            false, null);
-                            String data = new String(bn,
-                            "UTF-8");
-                            System.out.println(data);
-                            zkConnection.getConnectedSignal().countDown();
-
-                        }
-                        catch(Exception ex) 
-                        {
-                            ex.printStackTrace();
-                        }
-                    }
-                }
-            }, null);
-				
-        String data = new String(b, "UTF-8");
-        //System.out.println(data);
-        zkConnection.getConnectedSignal().await();
-				
-        } 
-        else 
-        {
-            System.out.println("Node does not exists");
-        }
-        return new String(b);
+        if(client == null || !client.getState().equals(CuratorFrameworkState.STARTED)  )
+            client.close();
     }
     
-
-    public boolean setData(String path, byte[] newData)
+    public boolean setData(String fullPath, String data) throws Exception
     {
-        boolean loLogro=true;
-        try 
+        if(client == null || !client.getState().equals(CuratorFrameworkState.STARTED)  )
+            createConnection();
+        if(checkExistNode(fullPath))
         {
-            zk.setData(path, newData, znode_exists(path).getVersion());
+            client.setData().forPath(fullPath,data.getBytes());
+            return true;
         }
-        catch (Exception e) 
-        {
-            loLogro = false;
-        }
-        
-        return loLogro;
-        
+        return false;
     }
-    
-    public ZooKeeperConnection getZkConnection() {
-        return zkConnection;
-    }
-
-    public ZooKeeper getZk() {
-        return zk;
-    }
-
-    public String getHost() {
-        return host;
-    }
-    
-    public void cerrarConeccion()
-    {
-        try 
-        {
-            zkConnection.close();
-        }
-        catch (Exception e) 
-        {
-            e.printStackTrace();
-        }
-    }
-    
-    /*public static void main(String[] args)
-    {
-        ZooKeeperMannager man = new ZooKeeperMannager("localhost");
-        try 
-        {
-            
-            System.out.println(man.obtenerInformación("/znodeServ1").toString());
-            System.out.println(man.obtenerInformación("/znodeServ2").toString());
-            man.zkConnection.close();
-        }
-        catch (Exception e) 
-        {
-            try
-            {
-            man.zkConnection.close();
-            }catch(Exception e1)
-            {
-                e1.printStackTrace();
-            }
-            e.printStackTrace();
-        }
-    }*/
     
 }
