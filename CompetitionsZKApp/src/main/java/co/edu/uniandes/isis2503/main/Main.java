@@ -18,7 +18,10 @@ import org.eclipse.jetty.webapp.WebAppContext;
  * @author Felipe
  *
  */
-public class Main {
+public class Main 
+{
+    
+    public static final String SERVIDOR_ZK = "http://localhost:8080/directory/";
 
     /**
      * @param args

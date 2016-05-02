@@ -176,7 +176,7 @@ public class ZooKeeperDiscoveryMannager
          ServiceProvider<InstanceDetails> provider = null ;//providers.get(serviceName);
        // if(provider == null)
         //{
-            provider = serviceDiscovery.serviceProviderBuilder().serviceName(serviceName).providerStrategy(new RandomStrategy<InstanceDetails>()).build();
+            provider = serviceDiscovery.serviceProviderBuilder().serviceName(serviceName).providerStrategy(new RoundRobinStrategy<InstanceDetails>()).build();
          //   providers.put(serviceName, provider);
             provider.start();
         //}

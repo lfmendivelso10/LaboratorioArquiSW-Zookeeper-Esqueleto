@@ -11,7 +11,11 @@ import org.eclipse.jetty.webapp.WebAppContext;
  * launching should fire this main method.
  *
  */
-public class Main {
+public class Main 
+{
+    
+    public static final String SERVIDOR_ZK = "http://localhost:8080/directory/";
+    
 
     /**
      * @param args

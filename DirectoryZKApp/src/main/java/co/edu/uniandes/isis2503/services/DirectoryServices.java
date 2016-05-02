@@ -7,8 +7,6 @@ package co.edu.uniandes.isis2503.services;
 
 import co.edu.uniandes.isis2503.logic.InstanceDetails;
 import co.edu.uniandes.isis2503.logic.ZooKeeperDiscoveryMannager;
-import co.edu.uniandes.isis2503.logic.ZooKeeperMannager;
-import co.edu.uniandes.isis2503.logic.ZooKeeperServerMannager;
 import javax.annotation.PostConstruct;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -16,17 +14,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.retry.RetryNTimes;
-import org.apache.curator.x.discovery.ServiceDiscovery;
-import org.apache.curator.x.discovery.ServiceDiscoveryBuilder;
 import org.apache.curator.x.discovery.ServiceInstance;
 import org.apache.curator.x.discovery.ServiceType;
-import org.apache.curator.x.discovery.details.JsonInstanceSerializer;
-import org.apache.curator.x.discovery.server.contexts.GenericDiscoveryContext;
-import org.apache.curator.x.discovery.server.rest.DiscoveryResource;
-import org.apache.curator.x.discovery.strategies.RoundRobinStrategy;
 import org.codehaus.jettison.json.JSONObject;
 
 /**
@@ -34,7 +23,7 @@ import org.codehaus.jettison.json.JSONObject;
  * @author Felipe
  */
 
-@Path("/discovery")
+@Path("/direcotory")
 public class DirectoryServices 
 {
     
