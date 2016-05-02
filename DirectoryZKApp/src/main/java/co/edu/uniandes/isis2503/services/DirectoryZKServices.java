@@ -88,8 +88,9 @@ public class DirectoryZKServices
             String address= in.getString("address");
             int port = in.getInt("port");
             String serviceType = in.getString("serviceType");
+            long registerTime = in.getLong("registrationTimeUTC");
 
-            ServiceInstance<InstanceDetails> service = new ServiceInstance<InstanceDetails>(name, id, address, port, Integer.SIZE, null, 0, ServiceType.valueOf(serviceType), null);
+            ServiceInstance<InstanceDetails> service = new ServiceInstance<InstanceDetails>(name, id, address, port, Integer.SIZE, null, registerTime, ServiceType.valueOf(serviceType), null);
 
             return zooKeeperServerMannager.putService(service,name,id);            
             

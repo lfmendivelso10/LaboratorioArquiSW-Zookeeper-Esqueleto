@@ -23,7 +23,7 @@ import org.codehaus.jettison.json.JSONObject;
  * @author Felipe
  */
 
-@Path("/direcotory")
+@Path("/directory")
 public class DirectoryServices 
 {
     

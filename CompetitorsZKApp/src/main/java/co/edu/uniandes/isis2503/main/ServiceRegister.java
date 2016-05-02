@@ -17,9 +17,9 @@ import org.codehaus.jettison.json.JSONObject;
  */
 public class ServiceRegister
 {
-    public static final String HOST = "10.20.30.50";
+    public static final String HOST_ADDRESS = "10.20.30.50";
     public static final int PORT = 8080;
-  //  public static String id = ""
+    public static final String ID = "200921691";
     
     
     public static Response registerService(String serviceName, String relativePath)
@@ -27,26 +27,15 @@ public class ServiceRegister
         try 
         {
             
-            
-            {
-       "name": "test3",
-       "id": "ca2fff8e-d756-480c-b59e-8297ff88624c22",
-       "address": "10.20.30.50",
-       "port": 1234,
-       "registrationTimeUTC": 1325129459728,
-       "serviceType": "STATIC"
-    }
-            
+                
             JSONObject datos = new JSONObject();
-            datos.put("name",serviceName;
-            datos.put("urlPagina","localHost:8081");
-            JSONObject datos2 = new JSONObject();
-            datos2.put("nombrePagina","Competitors");
-            datos2.put("nuevoEstado","Activo");
-            JSONObject datos3 = new JSONObject();
-            datos3.put("nombrePagina","Competitors");
-            datos3.put("nombreServicio","Competidores");
-            datos3.put("rutaServicio","competitors");
+            datos.put("name",serviceName);
+            datos.put("id",ID);
+            datos.put("address",HOST_ADDRESS);
+            datos.put("port",PORT);
+            datos.put("registrationTimeUTC",System.currentTimeMillis());
+            datos.put("serviceType","STATIC");
+           
  
  
  
